@@ -1,3 +1,4 @@
+using Microsoft.OpenApi.Models;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -6,11 +7,6 @@ using LojaSeuManoel.Domain.Services;
 using LojaSeuManoel.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-
-
-// Configuración de la autenticación JWT
-// var key = Encoding.ASCII.GetBytes("f8D&3j$kB!z@7Q^nP$e*1Yw%8WqM#2bT");
-// var key = Encoding.UTF8.GetBytes("f8D&3j$kB!z@7Q^nP$e*1Yw%8WqM#2bT");
 
 var key = Encoding.UTF8.GetBytes("f8D&3j$kB!z@7Q^nP$e*1Yw%8WqM#2bT");
 var symmetricKey = new SymmetricSecurityKey(key);
@@ -34,28 +30,49 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
+// Configuração de CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAnyOrigin",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+});
 
-// builder.Services.AddAuthentication(options =>
-// {
-//     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-//     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-// })
-// .AddJwtBearer(options =>
-// {
-//     options.RequireHttpsMetadata = true;
-//     options.SaveToken = true;
-//     options.TokenValidationParameters = new TokenValidationParameters
-//     {
-//         ValidateIssuerSigningKey = true,
-//         IssuerSigningKey = new SymmetricSecurityKey(key),
-//         ValidateIssuer = false,
-//         ValidateAudience = false
-//     };
-// });
+// Configuração do Swagger
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "API V1", Version = "v1" });
+    // Configuração de autenticação JWT no Swagger
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Por favor, insira 'Bearer' [espaço] e seu token JWT",
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+    c.EnableAnnotations(); // Habilitar anotaciones
+});
 
 
-// Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -64,28 +81,23 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
 
-
-// Configure o pipeline de requisições HTTP
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
-        c.RoutePrefix = "swagger"; // Ruta donde se accede a Swagger UI
+        c.RoutePrefix = "swagger";
     });
 }
-
 
 if (app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
 
-// Añadir el middleware de autenticación y autorización
-app.UseAuthentication(); // Asegúrate de que esté antes de UseAuthorization
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers(); // Isto permitirá o uso de controladores como PedidosController
-
+app.MapControllers();
 app.Run();

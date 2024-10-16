@@ -19,7 +19,7 @@ namespace LojaSeuManoel.WebApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult ProcessarPedidos([FromBody] PedidoEntrada pedidoEntrada)
+        public ActionResult ProcessarPedidos([FromBody] PedidoEntrada pedidoEntrada)
         {
             // Validação da entrada
             if (pedidoEntrada == null || pedidoEntrada.Pedidos == null || !pedidoEntrada.Pedidos.Any())
@@ -42,6 +42,5 @@ namespace LojaSeuManoel.WebApi.Controllers
             // Retornar a resposta como JSON
             return Ok(resultadoEmpacotado);
         }
-        
     }
 }

@@ -15,7 +15,7 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public IActionResult Login()
     {
-        // Generamos el token JWT sin userId
+        // Geramos o token JWT
         var token = _authService.GenerateJwtToken();
 
         return Ok(new { token });
