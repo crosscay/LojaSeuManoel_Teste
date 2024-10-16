@@ -26,4 +26,10 @@ http://localhost:8000/swagger
 
 ![pedidos_postman](https://github.com/user-attachments/assets/40addb43-a326-4b16-9518-cedecfca1016)
 
+
+![jwt](https://github.com/user-attachments/assets/cfc77077-2030-4539-bac0-e755042a2bd5)
+
+
+![swagger](https://github.com/user-attachments/assets/604e4509-df67-4dca-9ecd-ee41b2bed6bb)
+
 ```

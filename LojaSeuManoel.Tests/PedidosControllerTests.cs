@@ -43,11 +43,11 @@ namespace LojaSeuManoel.Tests
             {
                 Pedidos = new List<ResultadoPedido>
                 {
-                    new ResultadoPedido { PedidoId = 1, Caixas = new List<CaixaSalida>() }
+                    new ResultadoPedido { PedidoId = 1, Caixas = new List<CaixaSaida>() }
                 }
             };
 
-            _mockEmpacotamentoService.Setup(s => s.EmpacarPedidos(pedidoEntrada)).Returns(resultadoSaida);
+            _mockEmpacotamentoService.Setup(s => s.EmpacotarPedido(pedidoEntrada)).Returns(resultadoSaida);
 
             // Act
             var result = _controller.ProcessarPedidos(pedidoEntrada) as OkObjectResult;

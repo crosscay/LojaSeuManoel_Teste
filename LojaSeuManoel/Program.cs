@@ -1,16 +1,66 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using LojaSeuManoel.Application.Interfaces;
 using LojaSeuManoel.Domain.Services;
+using LojaSeuManoel.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+// Configuración de la autenticación JWT
+// var key = Encoding.ASCII.GetBytes("f8D&3j$kB!z@7Q^nP$e*1Yw%8WqM#2bT");
+// var key = Encoding.UTF8.GetBytes("f8D&3j$kB!z@7Q^nP$e*1Yw%8WqM#2bT");
+
+var key = Encoding.UTF8.GetBytes("f8D&3j$kB!z@7Q^nP$e*1Yw%8WqM#2bT");
+var symmetricKey = new SymmetricSecurityKey(key);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = true;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = symmetricKey,
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero
+    };
+});
+
+// Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
+
+// builder.Services.AddAuthentication(options =>
+// {
+//     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+//     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+// })
+// .AddJwtBearer(options =>
+// {
+//     options.RequireHttpsMetadata = true;
+//     options.SaveToken = true;
+//     options.TokenValidationParameters = new TokenValidationParameters
+//     {
+//         ValidateIssuerSigningKey = true,
+//         IssuerSigningKey = new SymmetricSecurityKey(key),
+//         ValidateIssuer = false,
+//         ValidateAudience = false
+//     };
+// });
+
+
 // Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddControllers(); // Cadastramos os controladores
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-// Cadastro de IEmpacotamentoService
 builder.Services.AddScoped<IEmpacotamentoService, EmpacotamentoService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
 
@@ -31,6 +81,10 @@ if (app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
+
+// Añadir el middleware de autenticación y autorización
+app.UseAuthentication(); // Asegúrate de que esté antes de UseAuthorization
+app.UseAuthorization();
 
 app.MapControllers(); // Isto permitirá o uso de controladores como PedidosController
 

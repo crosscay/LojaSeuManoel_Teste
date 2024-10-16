@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization; 
 using Microsoft.AspNetCore.Mvc;
 using LojaSeuManoel.Application.Interfaces;
 using LojaSeuManoel.Domain.Models;
@@ -6,6 +7,7 @@ namespace LojaSeuManoel.WebApi.Controllers
 {
     [ApiController]
     [Route("api/pedidos")]
+    [Authorize]
     public class PedidosController : ControllerBase
     {
         private readonly IEmpacotamentoService _empacotamentoService;

@@ -35,7 +35,7 @@ namespace LojaSeuManoel.Tests
             };
 
             // Act
-            var resultado = _empacotamentoService.EmpacarPedidos(pedidoEntrada);
+            var resultado = _empacotamentoService.EmpacotarPedido(pedidoEntrada);
 
             // Assert
             Assert.NotNull(resultado);
@@ -63,7 +63,7 @@ namespace LojaSeuManoel.Tests
             };
 
             // Act
-            var resultado = _empacotamentoService.EmpacarPedidos(pedidoEntrada);
+            var resultado = _empacotamentoService.EmpacotarPedido(pedidoEntrada);
 
             // Assert
             Assert.NotNull(resultado);
